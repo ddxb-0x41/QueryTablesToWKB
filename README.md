@@ -1,4 +1,4 @@
-# QueryTablesToWKB（）
+# QueryTablesToWKB
 
 VBAで可変長テキストをQueryTablesを利用してWorkbookオブジェクトを返しす。
 
