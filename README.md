@@ -10,7 +10,9 @@ fncQueryTablesToWKB.basをVBEでインポートする。
 
 ```bash
 Dim WKB As Workbook
-Set WKB = QueryTablesToWKB(FilePath, CharSet:="UTF-8", isGeneralColumn:=Array(3, 4), isSkipColumn:=Array(9, 13, 14, 15)
+Set WKB = QueryTablesToWKB(FilePath, CharSet:="UTF-8", _
+                           isGeneralColumn:=Array(3, 4), _
+                           isSkipColumn:=Array(9, 13, 14, 15)
 ```
 
 ※ファイルが読み込めない場合などは、WKB は Nothing が返ってきます。
