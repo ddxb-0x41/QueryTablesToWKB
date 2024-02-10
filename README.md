@@ -1,6 +1,15 @@
 # QueryTablesToWKB
 
 
-## 使い方
-
-## 使用例
+### 使い方
+#### ■必須
+##### FilePath:= ファイルパス
+##### CharSet:= 文字コード：SHIFT-JIS、UTF-8、UTF-16）
+#### ■追加オプション
+##### Delimiter:= 区切り文字：デフォルトは「,」（カンマ）
+##### LineSeparator:= 改行：デフォルトはvbCrLf、指定してもvbLfくらい
+##### isGeneralColumn:= 標準は文字列で取り込むので、自動でカラム認識を配列で指定
+##### isSkipColumn:= 取り込み除外するカラムを配列で指定
+#
+### 使用例
+##### Set WKB = QueryTablesToWKB(FilePath, CharSet:="UTF-8", isGeneralColumn:=Array(3, 4), isSkipColumn:=Array(9, 13, 14, 15))
