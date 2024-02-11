@@ -22,8 +22,6 @@ Else
 End If
 ```
 
-※ファイルが読み込めない場合は、Nothing を返します。
-
 ### ■必須オプション
 FilePath:= ファイルパス
 
@@ -32,7 +30,7 @@ CharSet:= 文字コード：SHIFT-JIS、UTF-8、UTF-16）
 
 Delimiter:= 区切り文字：無指定ならデフォルト値で「,」（カンマ）
 
-LineSeparator:= 改行：デフォルトはvbCrLf、ほかにはvbLfかvbCr
+LineSeparator:= 改行：無指定ならデフォルト値でvbCrLfを指定。
 
 isGeneralColumn:= 標準は文字列で取り込むので、自動でカラム認識を配列で指定（自動であれば数値や日付で自動認識します）
 
