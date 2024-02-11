@@ -1,6 +1,6 @@
 # QueryTablesToWKB
 
-VBAで可変長テキストをQueryTablesを利用してWorkbookオブジェクトを返しす。
+VBAで可変長テキストをQueryTablesを利用してWorkbookオブジェクトを返し。
 
 # Installation
 
