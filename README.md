@@ -1,6 +1,6 @@
 # QueryTablesToWKB
 
-VBAで可変長テキストをQueryTablesを利用してWorkbookオブジェクトを返し。
+VBAで可変長テキストをQueryTablesを利用してWorkbookオブジェクトを返す。
 
 # Installation
 
@@ -15,14 +15,13 @@ Set WKB = QueryTablesToWKB(FilePath, CharSet:="UTF-8", _
                            isSkipColumn:=Array(9, 13, 14, 15)
 ```
 
-※ファイルが読み込めない場合などは、WKB は Nothing が返ってきます。
+※ファイルが読み込めない場合などは、WKB は Nothing が返えす。
 
 ### ■必須オプション
 FilePath:= ファイルパス
-
+### ■追加オプション
 CharSet:= 文字コード：SHIFT-JIS、UTF-8、UTF-16）
 
-### ■追加オプション
 Delimiter:= 区切り文字：デフォルトは「,」（カンマ）
 
 LineSeparator:= 改行：デフォルトはvbCrLf、指定してもvbLfくらい
