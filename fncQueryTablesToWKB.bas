@@ -42,6 +42,8 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
             If UBound(ReadTextLine) <= 0 Then
                 QueryTablesToWKB = Nothing
                 GoTo Finally
+            Else
+                '
             End If
             Exit Do
         Loop
