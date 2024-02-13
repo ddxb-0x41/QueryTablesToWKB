@@ -3,9 +3,10 @@ Option Explicit
 Private Sub Callback_Sample()
     Dim WSH As Object: Set WSH = CreateObject("WScript.Shell")
     Dim FilePath As String
-    FilePath = WSH.SpecialFolders("Desktop") & "\dummy.csv"
+    FilePath = WSH.SpecialFolders("Desktop") & "\TEST.txt"
     Dim WKB As Workbook
-    Set WKB = QueryTablesToWKB(FilePath, CharSet:="UTF-8", isGeneralColumn:=Array(3, 4), isSkipColumn:=Array(9, 13, 14, 15))
+    Set WKB = QueryTablesToWKB(FilePath, CharSet:="UTF-8")
+    'Set WKB = QueryTablesToWKB(FilePath, isGeneralColumn:=Array(3, 4), isSkipColumn:=Array(9, 13, 14, 15))
 End Sub
 Function QueryTablesToWKB(ByVal FilePath As String, _
               Optional ByVal CharSet As String = "SHIFT-JIS", _
@@ -43,39 +44,40 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
                 QueryTablesToWKB = Nothing
                 GoTo Finally
             Else
-                '
+                With New Collection
+                    For i = LBound(ReadTextLine) To UBound(ReadTextLine)
+                        isGeneralFormat = False
+                        isSkipFormat = False
+                        If IsArray(isGeneralColumn) Then
+                            isGeneralFormat = isArrayExists(isGeneralColumn, i + 1)
+                        End If
+                        If IsArray(isSkipColumn) Then
+                            isSkipFormat = isArrayExists(isSkipColumn, i + 1)
+                        End If
+                        If isGeneralFormat Then
+                            .Add xlGeneralFormat    'é©ìÆ
+                        ElseIf isSkipFormat Then
+                            .Add xlSkipColumn       'ÉXÉLÉbÉvÉJÉâÉÄ
+                        Else
+                            .Add xlTextFormat       'ï∂éöóÒ
+                        End If
+                    Next
+                    ReDim ColumnDataTypes(1 To .Count): For i = 1 To .Count: ColumnDataTypes(i) = .Item(i): Next
+                End With
             End If
             Exit Do
         Loop
         .Close
     End With
-    With New Collection
-        For i = LBound(ReadTextLine) To UBound(ReadTextLine)
-            isGeneralFormat = False
-            isSkipFormat = False
-            If IsArray(isGeneralColumn) Then
-                isGeneralFormat = isArrayExists(isGeneralColumn, i + 1)
-            End If
-            If IsArray(isSkipColumn) Then
-                isSkipFormat = isArrayExists(isSkipColumn, i + 1)
-            End If
-            If isGeneralFormat Then
-                .Add xlGeneralFormat    'Ëá™Âãï
-            ElseIf isSkipFormat Then
-                .Add xlSkipColumn       '„Çπ„Ç≠„ÉÉ„Éó„Ç´„É©„É†
-            Else
-                .Add xlTextFormat       'ÊñáÂ≠óÂàó
-            End If
-        Next
-        ReDim ColumnDataTypes(1 To .Count): For i = 1 To .Count: ColumnDataTypes(i) = .Item(i): Next
-    End With
-    Application.StatusBar = "[QueryTablesË™≠„ÅøËæº„Åø]" & Dir(FilePath)
+    Application.StatusBar = "[QueryTablesì«Ç›çûÇ›]" & Dir(FilePath)
     Application.ScreenUpdating = False
     Set QueryTablesToWKB = Workbooks.Add
     Set sh = QueryTablesToWKB.ActiveSheet
     With sh.QueryTables.Add(Connection:="TEXT;" & FilePath, Destination:=sh.Range("A1"))
         .TextFileColumnDataTypes = ColumnDataTypes
-        .TextFilePlatform = CharSetType(CharSet)
+        If Not CharSetType(CharSet) = 1200 Then
+            .TextFilePlatform = CharSetType(CharSet)
+        End If
         .AdjustColumnWidth = False
         .TextFileOtherDelimiter = Delimiter
         .Refresh BackgroundQuery:=False
