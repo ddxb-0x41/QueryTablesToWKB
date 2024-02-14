@@ -98,7 +98,13 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
             .TextFilePlatform = CharSetType(CharSet)
         End If
         .AdjustColumnWidth = False
-        .TextFileOtherDelimiter = Delimiter
+        If Delimiter = "," Then
+            .TextFileCommaDelimiter = True
+        ElseIf Delimiter = ";" Then
+            .TextFileSemicolonDelimiter = True
+        Else
+            .TextFileOtherDelimiter = Delimiter
+        End If
         .Refresh BackgroundQuery:=False
         .Delete
     End With
