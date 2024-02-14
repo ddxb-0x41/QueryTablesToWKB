@@ -36,7 +36,11 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
         .Open
         .Type = 2
         .CharSet = CharSet
-        .LineSeparator = Asc(LineSeparator)
+        If LineSeparator = vbCrLf Then
+            .LineSeparator = -1
+        Else
+            .LineSeparator = Asc(LineSeparator)
+        End if
         .LoadFromFile FilePath
         Do Until .EOS
             ReadTextLine = Split(.ReadText(adReadLine), Delimiter)
@@ -55,11 +59,11 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
                             isSkipFormat = isArrayExists(isSkipColumn, i + 1)
                         End If
                         If isGeneralFormat Then
-                            .Add xlGeneralFormat    '©“®
+                            .Add xlGeneralFormat    'è‡ªå‹•
                         ElseIf isSkipFormat Then
-                            .Add xlSkipColumn       'ƒXƒLƒbƒvƒJƒ‰ƒ€
+                            .Add xlSkipColumn       'ã‚¹ã‚­ãƒƒãƒ—ã‚«ãƒ©ãƒ 
                         Else
-                            .Add xlTextFormat       '•¶š—ñ
+                            .Add xlTextFormat       'æ–‡å­—åˆ—
                         End If
                     Next
                     ReDim ColumnDataTypes(1 To .Count): For i = 1 To .Count: ColumnDataTypes(i) = .Item(i): Next
@@ -69,7 +73,7 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
         Loop
         .Close
     End With
-    Application.StatusBar = "[QueryTables“Ç‚İ‚İ]" & Dir(FilePath)
+    Application.StatusBar = "[QueryTablesèª­ã¿è¾¼ã¿]" & Dir(FilePath)
     Application.ScreenUpdating = False
     Set QueryTablesToWKB = Workbooks.Add
     Set sh = QueryTablesToWKB.ActiveSheet
