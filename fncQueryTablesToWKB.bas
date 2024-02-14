@@ -1,5 +1,10 @@
 Attribute VB_Name = "fncQueryTablesToWKB"
 Option Explicit
+Private Const adReadLine = -2
+Private Const adTypeText = 2
+Private Const adCRLF = -1
+Private Const adCR = 13
+Private Const adLF = 10
 Private Sub Callback_Sample()
     Dim WSH As Object: Set WSH = CreateObject("WScript.Shell")
     Dim FilePath As String
@@ -14,7 +19,6 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
               Optional ByVal LineSeparator As String = vbCrLf, _
               Optional ByVal isGeneralColumn As Variant, _
               Optional ByVal isSkipColumn As Variant) As Workbook
-    Const adReadLine = -2
     Dim CharSetType As Object: Set CharSetType = CreateObject("Scripting.Dictionary")
     With CharSetType
         .Add "SHIFT-JIS", 932
@@ -22,10 +26,21 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
         .Add "UTF-16", 1200
         .Add "UNICODE", 1200
     End With
+    Dim LineSeparatorType As Object: Set LineSeparatorType = CreateObject("Scripting.Dictionary")
+    With LineSeparatorType
+        .Add vbCrLf, adCRLF
+        .Add vbLf, adLF
+        .Add vbCr, adCR
+    End With
     CharSet = UCase(CharSet)
     If Not CharSetType.Exists(CharSet) Then
         QueryTablesToWKB = Nothing
         GoTo Finally
+    ElseIf Not LineSeparatorType.Exists(LineSeparator) Then
+        QueryTablesToWKB = Nothing
+        GoTo Finally
+    Else
+        'NOOP
     End If
     Dim sh As Worksheet
     Dim ReadTextLine As Variant
@@ -34,13 +49,9 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
     Dim isSkipFormat As Boolean
     With CreateObject("ADODB.Stream")
         .Open
-        .Type = 2
+        .Type = adTypeText
         .CharSet = CharSet
-        If LineSeparator = vbCrLf Then
-            .LineSeparator = -1
-        Else
-            .LineSeparator = Asc(LineSeparator)
-        End if
+        .LineSeparator = LineSeparatorType(LineSeparator)
         .LoadFromFile FilePath
         Do Until .EOS
             ReadTextLine = Split(.ReadText(adReadLine), Delimiter)
@@ -59,11 +70,11 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
                             isSkipFormat = isArrayExists(isSkipColumn, i + 1)
                         End If
                         If isGeneralFormat Then
-                            .Add xlGeneralFormat    'Ëá™Âãï
+                            .Add xlGeneralFormat    'é©ìÆ
                         ElseIf isSkipFormat Then
-                            .Add xlSkipColumn       '„Çπ„Ç≠„ÉÉ„Éó„Ç´„É©„É†
+                            .Add xlSkipColumn       'ÉXÉLÉbÉvÉJÉâÉÄ
                         Else
-                            .Add xlTextFormat       'ÊñáÂ≠óÂàó
+                            .Add xlTextFormat       'ï∂éöóÒ
                         End If
                     Next
                     ReDim ColumnDataTypes(1 To .Count): For i = 1 To .Count: ColumnDataTypes(i) = .Item(i): Next
@@ -73,13 +84,13 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
         Loop
         .Close
     End With
-    Application.StatusBar = "[QueryTablesË™≠„ÅøËæº„Åø]" & Dir(FilePath)
+    Application.StatusBar = "[QueryTablesì«Ç›çûÇ›]" & Dir(FilePath)
     Application.ScreenUpdating = False
     Set QueryTablesToWKB = Workbooks.Add
     Set sh = QueryTablesToWKB.ActiveSheet
     With sh.QueryTables.Add(Connection:="TEXT;" & FilePath, Destination:=sh.Range("A1"))
         .TextFileColumnDataTypes = ColumnDataTypes
-        If Not CharSetType(CharSet) = 1200 Then
+        If Not CharSetType(CharSet) = CharSetType("UNICODE") Then '1200ÇÕéwíËÇ∑ÇÈÇ∆ÉRÉPÇÈÇ±Ç∆Ç™Ç†ÇÈÇÃÇ≈ñ≥éwíË
             .TextFilePlatform = CharSetType(CharSet)
         End If
         .AdjustColumnWidth = False
