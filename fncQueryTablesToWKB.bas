@@ -108,6 +108,7 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
         .Refresh BackgroundQuery:=False
         .Delete
     End With
+    GoTo Finally
 Finally:
     Application.StatusBar = False
     Application.ScreenUpdating = True
