@@ -10,8 +10,8 @@ Private Sub Callback_Sample()
     Dim FilePath As String
     FilePath = WSH.SpecialFolders("Desktop") & "\TEST.txt"
     Dim WKB As Workbook
-    Set WKB = QueryTablesToWKB(FilePath, CharSet:="UTF-8")
-    'Set WKB = QueryTablesToWKB(FilePath, isGeneralColumn:=Array(3, 4), isSkipColumn:=Array(9, 13, 14, 15))
+    Set WKB = QueryTablesToWKB(FilePath, CharSet:="UTF-8", isGeneralColumn:=Array(3, 4), isSkipColumn:=Array(9, 13, 14, 15))
+    Debug.Print TypeName(WKB)
 End Sub
 Function QueryTablesToWKB(ByVal FilePath As String, _
               Optional ByVal CharSet As String = "SHIFT-JIS", _
@@ -34,11 +34,15 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
     End With
     CharSet = UCase(CharSet)
     If Not CharSetType.Exists(CharSet) Then
-        QueryTablesToWKB = Nothing
-        GoTo Finally
+        GoTo Finally '文字コードが指定が対応していない
     ElseIf Not LineSeparatorType.Exists(LineSeparator) Then
-        QueryTablesToWKB = Nothing
-        GoTo Finally
+        GoTo Finally '改行コード指定が対応していない
+    ElseIf Dir(FilePath, vbNormal) = "" Then
+        GoTo Finally 'ファイルが存在しない
+    ElseIf Not (IsArray(isGeneralColumn) Or TypeName(isGeneralColumn) = "Error") Then
+        GoTo Finally 'isGeneralColumnの引数がおかしい
+    ElseIf Not (IsArray(isSkipColumn) Or TypeName(isSkipColumn) = "Error") Then
+        GoTo Finally 'isSkipColumnの引数がおかしい
     Else
         'NOOP
     End If
@@ -80,7 +84,7 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
                     ReDim ColumnDataTypes(1 To .Count): For i = 1 To .Count: ColumnDataTypes(i) = .Item(i): Next
                 End With
             End If
-            Exit Do
+            Exit Do '１行目しかカラム数評価しないので、そもそもDo ～ Loopいらない
         Loop
         .Close
     End With
@@ -104,10 +108,12 @@ Finally:
 End Function
 Private Function isArrayExists(ByVal ArrayList As Variant, ByVal CheckValue As Variant) As Boolean
     Dim s As Variant
-    For Each s In ArrayList
-        If s = CheckValue Then
-            isArrayExists = True
-            Exit For
-        End If
-    Next
+    If IsArray(ArrayList) Then
+        For Each s In ArrayList
+            If s = CheckValue Then
+                isArrayExists = True
+                Exit For
+            End If
+        Next
+    End If
 End Function
