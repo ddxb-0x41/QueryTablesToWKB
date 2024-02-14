@@ -16,7 +16,7 @@ Set WKB = QueryTablesToWKB(FilePath, CharSet:="UTF-8", _
                            isGeneralColumn:=Array(3, 4), _
                            isSkipColumn:=Array(9, 13, 14, 15)
 If WKB Is Nothing Then
-  Debug.Print "ファイルが存在しないか、文字コードの指定が正しくない。"
+  Debug.Print "ファイルが存在しないか、パラメーターの指定が正しくない。"
 Else
   Debug.Print "ファイルを開きました。"
 End If
