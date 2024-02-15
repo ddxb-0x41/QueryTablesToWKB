@@ -15,6 +15,7 @@ Private Sub Callback_Sample()
 End Sub
 Function QueryTablesToWKB(ByVal FilePath As String, _
               Optional ByVal CharSet As String = "SHIFT-JIS", _
+              Optional ByVal isVisibleWKB As Boolean = True, _
               Optional ByVal Delimiter As String = ",", _
               Optional ByVal LineSeparator As String = vbCrLf, _
               Optional ByVal isGeneralColumn As Variant, _
@@ -34,15 +35,15 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
     End With
     CharSet = UCase(CharSet)
     If Not CharSetType.Exists(CharSet) Then
-        GoTo Finally 'æ–‡å­—ã‚³ãƒ¼ãƒ‰æŒ‡å®šãŒå¯¾å¿œã—ã¦ã„ãªã„
+        GoTo Finally '•¶šƒR[ƒhw’è‚ª‘Î‰‚µ‚Ä‚¢‚È‚¢
     ElseIf Not LineSeparatorType.Exists(LineSeparator) Then
-        GoTo Finally 'æ”¹è¡Œã‚³ãƒ¼ãƒ‰æŒ‡å®šãŒå¯¾å¿œã—ã¦ã„ãªã„
+        GoTo Finally '‰üsƒR[ƒhw’è‚ª‘Î‰‚µ‚Ä‚¢‚È‚¢
     ElseIf Dir(FilePath, vbNormal) = "" Then
-        GoTo Finally 'ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ãªã„
+        GoTo Finally 'ƒtƒ@ƒCƒ‹‚ª‘¶İ‚µ‚È‚¢
     ElseIf Not (IsArray(isGeneralColumn) Or TypeName(isGeneralColumn) = "Error") Then
-        GoTo Finally 'isGeneralColumnã®å¼•æ•°ãŒãŠã‹ã—ã„
+        GoTo Finally 'isGeneralColumn‚Ìˆø”‚ª‚¨‚©‚µ‚¢
     ElseIf Not (IsArray(isSkipColumn) Or TypeName(isSkipColumn) = "Error") Then
-        GoTo Finally 'isSkipColumnã®å¼•æ•°ãŒãŠã‹ã—ã„
+        GoTo Finally 'isSkipColumn‚Ìˆø”‚ª‚¨‚©‚µ‚¢
     Else
         'NOOP
     End If
@@ -74,27 +75,28 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
                             isSkipFormat = isArrayExists(isSkipColumn, i + 1)
                         End If
                         If isGeneralFormat Then
-                            .Add xlGeneralFormat    'è‡ªå‹•
+                            .Add xlGeneralFormat    '©“®
                         ElseIf isSkipFormat Then
-                            .Add xlSkipColumn       'ã‚¹ã‚­ãƒƒãƒ—ã‚«ãƒ©ãƒ 
+                            .Add xlSkipColumn       'ƒXƒLƒbƒvƒJƒ‰ƒ€
                         Else
-                            .Add xlTextFormat       'æ–‡å­—åˆ—
+                            .Add xlTextFormat       '•¶š—ñ
                         End If
                     Next
                     ReDim ColumnDataTypes(1 To .Count): For i = 1 To .Count: ColumnDataTypes(i) = .Item(i): Next
                 End With
             End If
-            Exit Do 'ï¼‘è¡Œç›®ã—ã‹ã‚«ãƒ©ãƒ æ•°è©•ä¾¡ã—ãªã„ã®ã§ã€ãã‚‚ãã‚‚Do ï½ Loopã„ã‚‰ãªã„
+            Exit Do '‚Ps–Ú‚µ‚©ƒJƒ‰ƒ€”•]‰¿‚µ‚È‚¢‚Ì‚ÅA‚»‚à‚»‚àDo ` Loop‚¢‚ç‚È‚¢
         Loop
         .Close
     End With
-    Application.StatusBar = "[QueryTablesèª­ã¿è¾¼ã¿]" & Dir(FilePath)
-    Application.ScreenUpdating = False
+    Application.StatusBar = "[QueryTables“Ç‚İ‚İ]" & Dir(FilePath)
+    'Application.ScreenUpdating = False
     Set QueryTablesToWKB = Workbooks.Add
+    Application.Windows(QueryTablesToWKB.Name).Visible = isVisibleWKB
     Set sh = QueryTablesToWKB.ActiveSheet
     With sh.QueryTables.Add(Connection:="TEXT;" & FilePath, Destination:=sh.Range("A1"))
         .TextFileColumnDataTypes = ColumnDataTypes
-        If Not CharSetType(CharSet) = CharSetType("UNICODE") Then '1200ã¯æŒ‡å®šã™ã‚‹ã¨ã‚³ã‚±ã‚‹ã“ã¨ãŒã‚ã‚‹ã®ã§ç„¡æŒ‡å®š
+        If Not CharSetType(CharSet) = CharSetType("UNICODE") Then '1200‚Íw’è‚·‚é‚ÆƒRƒP‚é‚±‚Æ‚ª‚ ‚é‚Ì‚Å–³w’è
             .TextFilePlatform = CharSetType(CharSet)
         End If
         .AdjustColumnWidth = False
@@ -108,10 +110,11 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
         .Refresh BackgroundQuery:=False
         .Delete
     End With
+    Application.StatusBar = False
     GoTo Finally
 Finally:
-    Application.StatusBar = False
-    Application.ScreenUpdating = True
+    'Application.StatusBar = False
+    'Application.ScreenUpdating = True
 End Function
 Private Function isArrayExists(ByVal ArrayList As Variant, ByVal CheckValue As Variant) As Boolean
     Dim s As Variant
@@ -124,3 +127,5 @@ Private Function isArrayExists(ByVal ArrayList As Variant, ByVal CheckValue As V
         Next
     End If
 End Function
+
+
