@@ -89,7 +89,7 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
         Loop
         .Close
     End With
-    Application.StatusBar = "[Loading QueryTables]" & Dir(FilePath)
+    Application.StatusBar = "[Loading]" & Dir(FilePath)
     'Application.ScreenUpdating = False
     Set QueryTablesToWKB = Workbooks.Add
     If Not isVisibleWKB Then
