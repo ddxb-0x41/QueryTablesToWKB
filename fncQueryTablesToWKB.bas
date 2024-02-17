@@ -14,12 +14,12 @@ Private Sub Callback_Sample()
     Debug.Print TypeName(WKB)
 End Sub
 Function QueryTablesToWKB(ByVal FilePath As String, _
-              Optional ByVal CharSet As String = "SHIFT-JIS", _
-              Optional ByVal isVisibleWKB As Boolean = True, _
-              Optional ByVal Delimiter As String = ",", _
-              Optional ByVal LineSeparator As String = vbCrLf, _
-              Optional ByVal isGeneralColumn As Variant, _
-              Optional ByVal isSkipColumn As Variant) As Workbook
+    Optional ByVal CharSet As String = "SHIFT-JIS", _
+    Optional ByVal isVisibleWKB As Boolean = True, _
+    Optional ByVal Delimiter As String = ",", _
+    Optional ByVal LineSeparator As String = vbCrLf, _
+    Optional ByVal isGeneralColumn As Variant, _
+    Optional ByVal isSkipColumn As Variant) As Workbook
     Dim CharSetType As Object: Set CharSetType = CreateObject("Scripting.Dictionary")
     With CharSetType
         .Add "SHIFT-JIS", 932
