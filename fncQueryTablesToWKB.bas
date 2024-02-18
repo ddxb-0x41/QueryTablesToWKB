@@ -10,7 +10,6 @@ Private Sub Callback_Sample()
     Dim WSH As Object: Set WSH = CreateObject("WScript.Shell")
     Dim FilePath As String
     FilePath = WSH.SpecialFolders("Desktop") & "\TEST.txt"
-    'Debug.Print Format(FileLen(FilePath) / 1024, "#,###.0") & "KB"
     Dim WKB As Workbook
     Set WKB = QueryTablesToWKB(FilePath, CharSet:="UTF-8", isGeneralColumn:=Array(3, 4), isSkipColumn:=Array(13, 14, 15))
     If WKB Is Nothing Then
@@ -18,7 +17,6 @@ Private Sub Callback_Sample()
     Else
         WKB.Close SaveChanges:=False
     End If
-
 End Sub
 Function QueryTablesToWKB(ByVal FilePath As String, _
     Optional ByVal CharSet As String = "SHIFT-JIS", _
@@ -42,15 +40,15 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
     End With
     CharSet = UCase(CharSet)
     If Not CharSetType.Exists(CharSet) Then
-        GoTo Finally '•¶šƒR[ƒhw’è‚ª‘Î‰‚µ‚Ä‚¢‚È‚¢
+        GoTo Finally 'æ–‡å­—ã‚³ãƒ¼ãƒ‰æŒ‡å®šãŒå¯¾å¿œã—ã¦ã„ãªã„
     ElseIf Not LineSeparatorType.Exists(LineSeparator) Then
-        GoTo Finally '‰üsƒR[ƒhw’è‚ª‘Î‰‚µ‚Ä‚¢‚È‚¢
+        GoTo Finally 'æ”¹è¡Œã‚³ãƒ¼ãƒ‰æŒ‡å®šãŒå¯¾å¿œã—ã¦ã„ãªã„
     ElseIf Dir(FilePath, vbNormal) = "" Then
-        GoTo Finally 'ƒtƒ@ƒCƒ‹‚ª‘¶İ‚µ‚È‚¢
+        GoTo Finally 'ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ãªã„
     ElseIf Not (IsArray(isGeneralColumn) Or TypeName(isGeneralColumn) = "Error") Then
-        GoTo Finally 'isGeneralColumn‚Ìˆø”‚ª‚¨‚©‚µ‚¢
+        GoTo Finally 'isGeneralColumnã®å¼•æ•°ãŒãŠã‹ã—ã„
     ElseIf Not (IsArray(isSkipColumn) Or TypeName(isSkipColumn) = "Error") Then
-        GoTo Finally 'isSkipColumn‚Ìˆø”‚ª‚¨‚©‚µ‚¢
+        GoTo Finally 'isSkipColumnã®å¼•æ•°ãŒãŠã‹ã—ã„
     Else
         'NOOP
     End If
@@ -82,17 +80,17 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
                             isSkipFormat = isArrayExists(isSkipColumn, i + 1)
                         End If
                         If isGeneralFormat Then
-                            .Add xlGeneralFormat    '©“®
+                            .Add xlGeneralFormat    'è‡ªå‹•
                         ElseIf isSkipFormat Then
                             .Add xlSkipColumn       'SKIP
                         Else
-                            .Add xlTextFormat       '•¶š—ñ
+                            .Add xlTextFormat       'æ–‡å­—åˆ—
                         End If
                     Next
                     ReDim ColumnDataTypes(1 To .Count): For i = 1 To .Count: ColumnDataTypes(i) = .Item(i): Next
                 End With
             End If
-            Exit Do '‚Ps–Ú‚µ‚©ƒJƒ‰ƒ€”•]‰¿‚µ‚È‚¢‚Ì‚ÅA‚»‚à‚»‚àDo ` Loop‚¢‚ç‚È‚¢
+            Exit Do 'ï¼‘è¡Œç›®ã—ã‹ã‚«ãƒ©ãƒ æ•°è©•ä¾¡ã—ãªã„ã®ã§ã€ãã‚‚ãã‚‚Do ï½ Loopã„ã‚‰ãªã„
         Loop
         .Close
     End With
@@ -104,7 +102,7 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
     Set sh = QueryTablesToWKB.ActiveSheet
     With sh.QueryTables.Add(Connection:="TEXT;" & FilePath, Destination:=sh.Cells(1, 1))
         .TextFileColumnDataTypes = ColumnDataTypes
-        If Not CharSetType(CharSet) = CharSetType("UNICODE") Then '1200‚Íw’è‚·‚é‚ÆƒRƒP‚é‚±‚Æ‚ª‚ ‚é‚Ì‚Å–³w’è
+        If Not CharSetType(CharSet) = CharSetType("UNICODE") Then '1200ã¯æŒ‡å®šã™ã‚‹ã¨ã‚³ã‚±ã‚‹ã“ã¨ãŒã‚ã‚‹ã®ã§ç„¡æŒ‡å®š
             .TextFilePlatform = CharSetType(CharSet)
         End If
         .AdjustColumnWidth = False
