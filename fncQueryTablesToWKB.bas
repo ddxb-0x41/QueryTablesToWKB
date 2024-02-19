@@ -28,9 +28,8 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
     Dim CharSetType As Object: Set CharSetType = CreateObject("Scripting.Dictionary")
     With CharSetType
         .Add "SHIFT-JIS", 932
-        .Add "UTF-8", 65001
-        .Add "UTF-16", 1200
-        .Add "UNICODE", 1200
+        .Add "UTF-8", 65001     'UTF-8 or UTF-8BOM
+        .Add "UTF-16", 1200     'UTF-16LEBOM
     End With
     Dim LineSeparatorType As Object: Set LineSeparatorType = CreateObject("Scripting.Dictionary")
     With LineSeparatorType
@@ -40,15 +39,15 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
     End With
     CharSet = UCase(CharSet)
     If Not CharSetType.Exists(CharSet) Then
-        GoTo Finally 'æ–‡å­—ã‚³ãƒ¼ãƒ‰æŒ‡å®šãŒå¯¾å¿œã—ã¦ã„ãªã„
+        GoTo Finally '•¶šƒR[ƒhw’è‚ª‘Î‰‚µ‚Ä‚¢‚È‚¢
     ElseIf Not LineSeparatorType.Exists(LineSeparator) Then
-        GoTo Finally 'æ”¹è¡Œã‚³ãƒ¼ãƒ‰æŒ‡å®šãŒå¯¾å¿œã—ã¦ã„ãªã„
+        GoTo Finally '‰üsƒR[ƒhw’è‚ª‘Î‰‚µ‚Ä‚¢‚È‚¢
     ElseIf Dir(FilePath, vbNormal) = "" Then
-        GoTo Finally 'ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ãªã„
+        GoTo Finally 'ƒtƒ@ƒCƒ‹‚ª‘¶İ‚µ‚È‚¢
     ElseIf Not (IsArray(isGeneralColumn) Or TypeName(isGeneralColumn) = "Error") Then
-        GoTo Finally 'isGeneralColumnã®å¼•æ•°ãŒãŠã‹ã—ã„
+        GoTo Finally 'isGeneralColumn‚Ìˆø”‚ª‚¨‚©‚µ‚¢
     ElseIf Not (IsArray(isSkipColumn) Or TypeName(isSkipColumn) = "Error") Then
-        GoTo Finally 'isSkipColumnã®å¼•æ•°ãŒãŠã‹ã—ã„
+        GoTo Finally 'isSkipColumn‚Ìˆø”‚ª‚¨‚©‚µ‚¢
     Else
         'NOOP
     End If
@@ -80,17 +79,17 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
                             isSkipFormat = isArrayExists(isSkipColumn, i + 1)
                         End If
                         If isGeneralFormat Then
-                            .Add xlGeneralFormat    'è‡ªå‹•
+                            .Add xlGeneralFormat    '©“®
                         ElseIf isSkipFormat Then
                             .Add xlSkipColumn       'SKIP
                         Else
-                            .Add xlTextFormat       'æ–‡å­—åˆ—
+                            .Add xlTextFormat       '•¶š—ñ
                         End If
                     Next
                     ReDim ColumnDataTypes(1 To .Count): For i = 1 To .Count: ColumnDataTypes(i) = .Item(i): Next
                 End With
             End If
-            Exit Do 'ï¼‘è¡Œç›®ã—ã‹ã‚«ãƒ©ãƒ æ•°è©•ä¾¡ã—ãªã„ã®ã§ã€ãã‚‚ãã‚‚Do ï½ Loopã„ã‚‰ãªã„
+            Exit Do '‚Ps–Ú‚µ‚©ƒJƒ‰ƒ€”•]‰¿‚µ‚È‚¢‚Ì‚ÅA‚»‚à‚»‚àDo ` Loop‚¢‚ç‚È‚¢
         Loop
         .Close
     End With
@@ -102,7 +101,7 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
     Set sh = QueryTablesToWKB.ActiveSheet
     With sh.QueryTables.Add(Connection:="TEXT;" & FilePath, Destination:=sh.Cells(1, 1))
         .TextFileColumnDataTypes = ColumnDataTypes
-        If Not CharSetType(CharSet) = CharSetType("UNICODE") Then '1200ã¯æŒ‡å®šã™ã‚‹ã¨ã‚³ã‚±ã‚‹ã“ã¨ãŒã‚ã‚‹ã®ã§ç„¡æŒ‡å®š
+        If Not CharSetType(CharSet) = 1200 Then '1200‚Íw’è‚·‚é‚ÆƒRƒP‚é‚±‚Æ‚ª‚ ‚é‚Ì‚Å–³w’è
             .TextFilePlatform = CharSetType(CharSet)
         End If
         .AdjustColumnWidth = False
