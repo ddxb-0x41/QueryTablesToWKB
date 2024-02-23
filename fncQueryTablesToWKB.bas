@@ -46,15 +46,15 @@ Function QueryTablesToWKB(FilePath As String, _
     CharSet = UCase(CharSet)
     If CharSet = "SHIFT-JIS" Then CharSet = Replace(CharSet, "-", "_")
     If Not CharSetType.Exists(CharSet) Then
-        GoTo Finally '•¶šƒR[ƒhw’è‚ª‘Î‰‚µ‚Ä‚¢‚È‚¢
+        GoTo Finally 'æ–‡å­—ã‚³ãƒ¼ãƒ‰æŒ‡å®šãŒå¯¾å¿œã—ã¦ã„ãªã„
     ElseIf Not LineSeparatorType.Exists(LineSeparator) Then
-        GoTo Finally '‰üsƒR[ƒhw’è‚ª‘Î‰‚µ‚Ä‚¢‚È‚¢
+        GoTo Finally 'æ”¹è¡Œã‚³ãƒ¼ãƒ‰æŒ‡å®šãŒå¯¾å¿œã—ã¦ã„ãªã„
     ElseIf Dir(FilePath, vbNormal) = "" Then
-        GoTo Finally 'ƒtƒ@ƒCƒ‹‚ª‘¶İ‚µ‚È‚¢
+        GoTo Finally 'ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ãªã„
     ElseIf Not (IsArray(isGeneralColumn) Or IsEmpty(isGeneralColumn)) Then
-    '    GoTo Finally 'isGeneralColumn‚Ìˆø”‚ª‚¨‚©‚µ‚¢
+        GoTo Finally 'isGeneralColumnã®å¼•æ•°ãŒãŠã‹ã—ã„
     ElseIf Not (IsArray(isSkipColumn) Or IsEmpty(isSkipColumn)) Then
-        GoTo Finally 'isSkipColumn‚Ìˆø”‚ª‚¨‚©‚µ‚¢
+        GoTo Finally 'isSkipColumnã®å¼•æ•°ãŒãŠã‹ã—ã„
     Else
         'NOOP
     End If
@@ -86,17 +86,17 @@ Function QueryTablesToWKB(FilePath As String, _
                             isSkipFormat = isArrayExists(isSkipColumn, i + 1)
                         End If
                         If isGeneralFormat Then
-                            .Add xlGeneralFormat    '©“®
+                            .Add xlGeneralFormat    'è‡ªå‹•
                         ElseIf isSkipFormat Then
                             .Add xlSkipColumn       'SKIP
                         Else
-                            .Add xlTextFormat       '•¶š—ñ
+                            .Add xlTextFormat       'æ–‡å­—åˆ—
                         End If
                     Next
                     ReDim ColumnDataTypes(1 To .Count): For i = 1 To .Count: ColumnDataTypes(i) = .Item(i): Next
                 End With
             End If
-            Exit Do '‚Ps–Ú‚µ‚©ƒJƒ‰ƒ€”•]‰¿‚µ‚È‚¢‚Ì‚ÅA‚»‚à‚»‚àDo ` Loop‚¢‚ç‚È‚¢
+            Exit Do 'ï¼‘è¡Œç›®ã—ã‹ã‚«ãƒ©ãƒ æ•°è©•ä¾¡ã—ãªã„ã®ã§ã€ãã‚‚ãã‚‚Do ï½ Loopã„ã‚‰ãªã„
         Loop
         .Close
     End With
@@ -108,7 +108,7 @@ Function QueryTablesToWKB(FilePath As String, _
     Set sh = QueryTablesToWKB.ActiveSheet
     With sh.QueryTables.Add(Connection:="TEXT;" & FilePath, Destination:=sh.Cells(1, 1))
         .TextFileColumnDataTypes = ColumnDataTypes
-        If Not CharSetType(CharSet) = 1200 Then '1200‚Íw’è‚·‚é‚ÆƒRƒP‚é‚±‚Æ‚ª‚ ‚é‚Ì‚Å–³w’è
+        If Not CharSetType(CharSet) = 1200 Then '1200ã¯æŒ‡å®šã™ã‚‹ã¨ã‚³ã‚±ã‚‹ã“ã¨ãŒã‚ã‚‹ã®ã§ç„¡æŒ‡å®š
             .TextFilePlatform = CharSetType(CharSet)
         End If
         .AdjustColumnWidth = False
