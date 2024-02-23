@@ -1,16 +1,22 @@
 Attribute VB_Name = "fncQueryTablesToWKB"
 Option Explicit
+Private Const adSaveCreateNotExist = 1
+Private Const adSaveCreateOverWrite = 2
+Private Const adWriteChar = 0
+Private Const adWriteLine = 1
 Private Const adReadLine = -2
+Private Const adReadAll = -1
+Private Const adTypeBinary = 1
 Private Const adTypeText = 2
 Private Const adCRLF = -1
 Private Const adCR = 13
 Private Const adLF = 10
-Private Declare PtrSafe Sub Sleep Lib "kernel32" (ByVal dwMilliseconds As Long)
 Private Sub Callback_Sample()
     Dim WSH As Object: Set WSH = CreateObject("WScript.Shell")
     Dim FilePath As String
     FilePath = WSH.SpecialFolders("Desktop") & "\TEST.txt"
     Dim WKB As Workbook
+    'Set WKB = QueryTablesToWKB(FilePath, CharSet:="UTF-8")
     Set WKB = QueryTablesToWKB(FilePath, CharSet:="UTF-8", isGeneralColumn:=Array(3, 4), isSkipColumn:=Array(13, 14, 15))
     If WKB Is Nothing Then
         'NOOP
@@ -18,16 +24,16 @@ Private Sub Callback_Sample()
         WKB.Close SaveChanges:=False
     End If
 End Sub
-Function QueryTablesToWKB(ByVal FilePath As String, _
-    Optional ByVal CharSet As String = "SHIFT-JIS", _
-    Optional ByVal isVisibleWKB As Boolean = True, _
-    Optional ByVal Delimiter As String = ",", _
-    Optional ByVal LineSeparator As String = vbCrLf, _
-    Optional ByVal isGeneralColumn As Variant, _
-    Optional ByVal isSkipColumn As Variant) As Workbook
+Function QueryTablesToWKB(FilePath As String, _
+    Optional CharSet As String = "SHIFT_JIS", _
+    Optional isVisibleWKB As Boolean = True, _
+    Optional Delimiter As String = ",", _
+    Optional LineSeparator As String = vbCrLf, _
+    Optional isGeneralColumn As Variant = Empty, _
+    Optional isSkipColumn As Variant = Empty) As Workbook
     Dim CharSetType As Object: Set CharSetType = CreateObject("Scripting.Dictionary")
     With CharSetType
-        .Add "SHIFT-JIS", 932
+        .Add "SHIFT_JIS", 932
         .Add "UTF-8", 65001     'UTF-8 or UTF-8BOM
         .Add "UTF-16", 1200     'UTF-16LEBOM
     End With
@@ -38,16 +44,17 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
         .Add vbCr, adCR
     End With
     CharSet = UCase(CharSet)
+    If CharSet = "SHIFT-JIS" Then CharSet = Replace(CharSet, "-", "_")
     If Not CharSetType.Exists(CharSet) Then
-        GoTo Finally 'æ–‡å­—ã‚³ãƒ¼ãƒ‰æŒ‡å®šãŒå¯¾å¿œã—ã¦ã„ãªã„
+        GoTo Finally '•¶šƒR[ƒhw’è‚ª‘Î‰‚µ‚Ä‚¢‚È‚¢
     ElseIf Not LineSeparatorType.Exists(LineSeparator) Then
-        GoTo Finally 'æ”¹è¡Œã‚³ãƒ¼ãƒ‰æŒ‡å®šãŒå¯¾å¿œã—ã¦ã„ãªã„
+        GoTo Finally '‰üsƒR[ƒhw’è‚ª‘Î‰‚µ‚Ä‚¢‚È‚¢
     ElseIf Dir(FilePath, vbNormal) = "" Then
-        GoTo Finally 'ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ãªã„
-    ElseIf Not (IsArray(isGeneralColumn) Or TypeName(isGeneralColumn) = "Error") Then
-        GoTo Finally 'isGeneralColumnã®å¼•æ•°ãŒãŠã‹ã—ã„
-    ElseIf Not (IsArray(isSkipColumn) Or TypeName(isSkipColumn) = "Error") Then
-        GoTo Finally 'isSkipColumnã®å¼•æ•°ãŒãŠã‹ã—ã„
+        GoTo Finally 'ƒtƒ@ƒCƒ‹‚ª‘¶İ‚µ‚È‚¢
+    ElseIf Not (IsArray(isGeneralColumn) Or IsEmpty(isGeneralColumn)) Then
+    '    GoTo Finally 'isGeneralColumn‚Ìˆø”‚ª‚¨‚©‚µ‚¢
+    ElseIf Not (IsArray(isSkipColumn) Or IsEmpty(isSkipColumn)) Then
+        GoTo Finally 'isSkipColumn‚Ìˆø”‚ª‚¨‚©‚µ‚¢
     Else
         'NOOP
     End If
@@ -79,17 +86,17 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
                             isSkipFormat = isArrayExists(isSkipColumn, i + 1)
                         End If
                         If isGeneralFormat Then
-                            .Add xlGeneralFormat    'è‡ªå‹•
+                            .Add xlGeneralFormat    '©“®
                         ElseIf isSkipFormat Then
                             .Add xlSkipColumn       'SKIP
                         Else
-                            .Add xlTextFormat       'æ–‡å­—åˆ—
+                            .Add xlTextFormat       '•¶š—ñ
                         End If
                     Next
                     ReDim ColumnDataTypes(1 To .Count): For i = 1 To .Count: ColumnDataTypes(i) = .Item(i): Next
                 End With
             End If
-            Exit Do 'ï¼‘è¡Œç›®ã—ã‹ã‚«ãƒ©ãƒ æ•°è©•ä¾¡ã—ãªã„ã®ã§ã€ãã‚‚ãã‚‚Do ï½ Loopã„ã‚‰ãªã„
+            Exit Do '‚Ps–Ú‚µ‚©ƒJƒ‰ƒ€”•]‰¿‚µ‚È‚¢‚Ì‚ÅA‚»‚à‚»‚àDo ` Loop‚¢‚ç‚È‚¢
         Loop
         .Close
     End With
@@ -101,7 +108,7 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
     Set sh = QueryTablesToWKB.ActiveSheet
     With sh.QueryTables.Add(Connection:="TEXT;" & FilePath, Destination:=sh.Cells(1, 1))
         .TextFileColumnDataTypes = ColumnDataTypes
-        If Not CharSetType(CharSet) = 1200 Then '1200ã¯æŒ‡å®šã™ã‚‹ã¨ã‚³ã‚±ã‚‹ã“ã¨ãŒã‚ã‚‹ã®ã§ç„¡æŒ‡å®š
+        If Not CharSetType(CharSet) = 1200 Then '1200‚Íw’è‚·‚é‚ÆƒRƒP‚é‚±‚Æ‚ª‚ ‚é‚Ì‚Å–³w’è
             .TextFilePlatform = CharSetType(CharSet)
         End If
         .AdjustColumnWidth = False
@@ -115,7 +122,6 @@ Function QueryTablesToWKB(ByVal FilePath As String, _
         .Refresh BackgroundQuery:=False
         .Delete
     End With
-    Application.StatusBar = False
     GoTo Finally
 ErrorHandler:
     
