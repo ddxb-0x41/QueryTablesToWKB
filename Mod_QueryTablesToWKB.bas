@@ -1,5 +1,10 @@
 Attribute VB_Name = "Mod_QueryTablesToWKB"
 Option Explicit
+Public Enum adTextEncode
+    adSHIFTJIS 932
+    adUTF8 65001
+    adUTF16 1200
+End Enum
 Private Const adSaveCreateNotExist = 1
 Private Const adSaveCreateOverWrite = 2
 Private Const adWriteChar = 0
@@ -36,7 +41,7 @@ Function QueryTablesToWKB(FilePath As String, _
     Optional isGeneralColumn As Variant = Empty, _
     Optional isSkipColumn As Variant = Empty _
     ) As Workbook
-    '•K—vƒ‚ƒWƒ…[ƒ‹
+    'å¿…è¦ãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«
     'GetArrayDimensionCount
     'isArrayExists
     Dim CharSetType As Object: Set CharSetType = CreateObject("Scripting.Dictionary")
@@ -54,22 +59,22 @@ Function QueryTablesToWKB(FilePath As String, _
     CharSet = UCase(CharSet)
     If CharSet = "SHIFT-JIS" Then CharSet = Replace(CharSet, "-", "_")
     If Not CharSetType.Exists(CharSet) Then
-        '•¶šƒR[ƒhw’è‚ª‘Î‰‚µ‚Ä‚¢‚È‚¢
+        'æ–‡å­—ã‚³ãƒ¼ãƒ‰æŒ‡å®šãŒå¯¾å¿œã—ã¦ã„ãªã„
         GoTo Finally
     ElseIf Not LineSeparatorType.Exists(LineSeparator) Then
-        '‰üsƒR[ƒhw’è‚ª‘Î‰‚µ‚Ä‚¢‚È‚¢
+        'æ”¹è¡Œã‚³ãƒ¼ãƒ‰æŒ‡å®šãŒå¯¾å¿œã—ã¦ã„ãªã„
         GoTo Finally
     ElseIf Dir(FilePath, vbNormal) = "" Then
-        'ƒtƒ@ƒCƒ‹‚ª‘¶İ‚µ‚È‚¢
+        'ãƒ•ã‚¡ã‚¤ãƒ«ãŒå­˜åœ¨ã—ãªã„
         GoTo Finally
     ElseIf Not (GetArrayDimensionCount(isGeneralColumn) = 1 Or IsEmpty(isGeneralColumn)) Then
-        'isGeneralColumn‚Ìˆø”‚ª‚¨‚©‚µ‚¢
+        'isGeneralColumnã®å¼•æ•°ãŒãŠã‹ã—ã„
         GoTo Finally
     ElseIf Not (GetArrayDimensionCount(isSkipColumn) = 1 Or IsEmpty(isSkipColumn)) Then
-        'isSkipColumn‚Ìˆø”‚ª‚¨‚©‚µ‚¢
+        'isSkipColumnã®å¼•æ•°ãŒãŠã‹ã—ã„
         GoTo Finally
     Else
-        'ˆ—‘±s
+        'å‡¦ç†ç¶šè¡Œ
     End If
     Dim sh As Worksheet
     Dim ReadTextLine As Variant
@@ -101,15 +106,15 @@ Function QueryTablesToWKB(FilePath As String, _
                         If isSkipFormat Then
                             .Add xlSkipColumn       'SKIP
                         ElseIf isGeneralFormat Then
-                            .Add xlGeneralFormat    '©“®
+                            .Add xlGeneralFormat    'è‡ªå‹•
                         Else
-                            .Add xlTextFormat       '•¶š—ñ
+                            .Add xlTextFormat       'æ–‡å­—åˆ—
                         End If
                     Next
                     ReDim ColumnDataTypes(1 To .Count): For i = 1 To .Count: ColumnDataTypes(i) = .Item(i): Next
                 End With
             End If
-            Exit Do '‚Ps–Ú‚µ‚©ƒJƒ‰ƒ€”•]‰¿‚µ‚È‚¢‚Ì‚ÅA‚»‚à‚»‚àDo ` Loop‚¢‚ç‚È‚¢
+            Exit Do 'ï¼‘è¡Œç›®ã—ã‹ã‚«ãƒ©ãƒ æ•°è©•ä¾¡ã—ãªã„ã®ã§ã€ãã‚‚ãã‚‚Do ï½ Loopã„ã‚‰ãªã„
         Loop
         .Close
     End With
@@ -121,7 +126,7 @@ Function QueryTablesToWKB(FilePath As String, _
     Set sh = QueryTablesToWKB.ActiveSheet
     With sh.QueryTables.Add(Connection:="TEXT;" & FilePath, Destination:=sh.Cells(1, 1))
         .TextFileColumnDataTypes = ColumnDataTypes
-        If Not CharSetType(CharSet) = 1200 Then '1200‚Íw’è‚·‚é‚ÆƒRƒP‚é‚Ì‚Å–³w’è
+        If Not CharSetType(CharSet) = 1200 Then '1200ã¯æŒ‡å®šã™ã‚‹ã¨ã‚³ã‚±ã‚‹ã®ã§ç„¡æŒ‡å®š
             .TextFilePlatform = CharSetType(CharSet)
         End If
         .AdjustColumnWidth = False
@@ -144,8 +149,8 @@ End Function
 Private Function isArrayExists(ByVal SourceArray As Variant, _
     ByVal Value As Variant _
     ) As Boolean
-    '¡1ŸŒ³”z—ñ‚É’l‚ª‘¶İ‚·‚é‚©Šm”F‚·‚é
-    '•K{ƒ‚ƒWƒ…[ƒ‹
+    'â– 1æ¬¡å…ƒé…åˆ—ã«å€¤ãŒå­˜åœ¨ã™ã‚‹ã‹ç¢ºèªã™ã‚‹
+    'å¿…é ˆãƒ¢ã‚¸ãƒ¥ãƒ¼ãƒ«
     'GetArrayDimensionCount
     Dim s As Variant
     If IsArray(SourceArray) Then
@@ -160,14 +165,14 @@ Private Function isArrayExists(ByVal SourceArray As Variant, _
     End If
 End Function
 Private Function GetArrayDimensionCount(ByVal ArrayList As Variant) As Integer
-    '¡ˆø””z—ñ‚ÌŸŒ³”‚ğ•Ô‚·
+    'â– å¼•æ•°é…åˆ—ã®æ¬¡å…ƒæ•°ã‚’è¿”ã™
     Dim i As Long
     Dim DimensionCount As Long
     If IsArray(ArrayList) Then
         On Error Resume Next
         Do While Err.Number = 0
             DimensionCount = DimensionCount + 1
-            i = UBound(ArrayList, DimensionCount) 'g—p‚µ‚È‚¢’l
+            i = UBound(ArrayList, DimensionCount) 'ä½¿ç”¨ã—ãªã„å€¤
         Loop
         On Error GoTo 0
         Err.Number = 0
