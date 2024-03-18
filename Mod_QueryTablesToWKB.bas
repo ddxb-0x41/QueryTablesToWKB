@@ -1,14 +1,14 @@
 Attribute VB_Name = "Mod_QueryTablesToWKB"
 Option Explicit
 Private Enum adTextEncode
-    adSHIFTJIS 932
-    adUTF8 65001
-    adUTF16 1200
+    adSHIFTJIS = 932
+    adUTF8 = 65001
+    adUTF16 = 1200
 End Enum
 Private Enum adLineSeparater
-    adCRLF -1
-    adCR 13
-    adLF 10
+    adCRLF = -1
+    adCR = 13
+    adLF = 10
 End Enum
 Private Const adSaveCreateNotExist = 1
 Private Const adSaveCreateOverWrite = 2
