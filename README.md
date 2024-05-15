@@ -1,6 +1,6 @@
 # QueryTablesToWKB
 
-VBAで可変長テキストをQueryTablesを利用して開いてWorkbookオブジェクトを返すFunctionです。
+VBAでCSVををQueryTablesを利用して開いてWorkbookオブジェクトを返すFunctionです。
 
 # Installation
 
