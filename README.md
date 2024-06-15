@@ -1,6 +1,6 @@
 # QueryTablesToWKB
 
-VBAでCSVををQueryTablesを利用して開いてWorkbookオブジェクトを返すFunctionです。
+VBAでCSVをQueryTablesを利用して開いてWorkbookオブジェクトを返すFunctionです。
 
 # Installation
 
