@@ -8,7 +8,7 @@ fncQueryTablesToWKB.basをVBEでインポートする。
 
 # Usage
 
-```bash
+```vb
 Dim WKB As Workbook
 Set WKB = QueryTablesToWKB(FilePath, CharSet:="UTF-8", _
                            Delimiter:=vbTab, _
